@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController } from 'AppTodo/node_modules/@ionic/angular/ionic-angular';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +9,8 @@ import { AlertController } from 'AppTodo/node_modules/@ionic/angular/ionic-angul
 export class HomePage {
 
   constructor(private alertCrtl: AlertController) {}
-  async shawAdd() {
+
+  async showAdd() {
     const alert = await this. alertCrtl.create({
       cssClass: 'my-custom-class',
       header: 'o que você deseja fazer?',
@@ -21,7 +22,7 @@ export class HomePage {
         },
       ],
       buttons: [
-      {
+        {
         text: 'Cancelar',
         role: 'cancel',
         cssClass: 'secondary',
@@ -30,14 +31,15 @@ export class HomePage {
         },
       },
       {
-        text: 'Adicionar',
+        text: 'Adicionar ',
         handler: () => {
           console.log('Adicionado com sucesso!');
         },
       },
       ],
     });
-    await alert.present();
+
+  await alert.present();
 }
 
 }

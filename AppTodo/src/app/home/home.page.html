@@ -25,14 +25,6 @@
     </ion-item>
   </ion-list>
 
-<ion-fab vertical="center" horizontal="end" slot="fixed">
-  <ion-fab-button (click)="showAdd()" color="secondary">
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
-</ion-content>
-
-<ion-content [fullscreen]="true">
   <ion-list>
     <ion-item-slinding>
       <ion-item>
@@ -55,6 +47,12 @@
   </ion-item-options>
 </ion-item-slinding>
 </ion-list>
+
+<ion-fab vertical="center" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="showAdd()" color="secondary">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
 </ion-content>
 
