@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -7,8 +7,16 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  tarefas: any[] = [];
 
-  constructor(private alertCrtl: AlertController) {}
+  constructor(private alertCrtl: AlertController,private toastCtrl: ToastController) {
+    let tarefaSalva = localStorage.getItem('tarefaUsuario');
+
+    if (tarefaSalva !=null) {
+      this.tarefas = JSON.parse(tarefaSalva);
+    }
+  }
+  
 
   async showAdd() {
     const alert = await this. alertCrtl.create({
@@ -31,15 +39,57 @@ export class HomePage {
         },
       },
       {
-        text: 'Adicionar ',
-        handler: () => {
-          console.log('Adicionado com sucesso!');
+        text: 'Add',
+        handler: (form) => {
+          this.adicionandoTarefa(form.tarefa1);
         },
       },
+
       ],
     });
-
   await alert.present();
 }
+async  adicionandoTarefa(novatarefa: string) {
+  if (novatarefa.trim().length < 1) {
+    const toast = await this.toastCtrl.create({
+      message: 'Por favor, digite a tarefa 1',
+      duration:2000,
+      position: 'top',
+    });
+    toast.present();
+
+  }
+  const tarefa = { nome:novatarefa, realizada: false };
+  this.tarefas.push(tarefa);
+  this.salvaLocalStorage();
+}
+
+  salvaLocalStorage(){
+    localStorage.setItem('tarefaUsuario', JSON.stringify(this.tarefas));
+  }
+
+  async realizaAcoes(tarefa: any) {
+    const actionSheet= await this.actionSheetCrtl.create({
+      header: 'Qual ação realizar?',
+      buttons: [{
+        text: tarefa.realizada ? 'Desmacar' : 'Marcar',
+        icon: tarefa.realizada ? 'checkmark-circle' : 'radio-button-off-outline',
+        handler: () => {
+          tarefa.realizada = !tarefa.realizada;
+          this.salvaLocalStorage();
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }]
+    });
+    await actionSheet.present();
+    const {role, data } = await actionSheet.onDidDismiss();
+  
+  }
 
 }
