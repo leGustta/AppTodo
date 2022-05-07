@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +9,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 export class HomePage {
   tarefas: any[] = [];
 
-  constructor(private alertCrtl: AlertController,private toastCtrl: ToastController) {
+  constructor(private alertCrtl: AlertController,private toastCtrl: ToastController,private actionSheetCtrl: ActionSheetController) {
     let tarefaSalva = localStorage.getItem('tarefaUsuario');
 
     if (tarefaSalva !=null) {
@@ -39,7 +39,7 @@ export class HomePage {
         },
       },
       {
-        text: 'Add',
+        text: 'Adicionar',
         handler: (form) => {
           this.adicionandoTarefa(form.tarefa1);
         },
@@ -57,6 +57,7 @@ async  adicionandoTarefa(novatarefa: string) {
       position: 'top',
     });
     toast.present();
+    return;
 
   }
   const tarefa = { nome:novatarefa, realizada: false };
@@ -69,7 +70,7 @@ async  adicionandoTarefa(novatarefa: string) {
   }
 
   async realizaAcoes(tarefa: any) {
-    const actionSheet= await this.actionSheetCrtl.create({
+    const actionSheet= await this.actionSheetCtrl.create({
       header: 'Qual ação realizar?',
       buttons: [{
         text: tarefa.realizada ? 'Desmacar' : 'Marcar',
@@ -91,5 +92,9 @@ async  adicionandoTarefa(novatarefa: string) {
     const {role, data } = await actionSheet.onDidDismiss();
   
   }
+  excluirTarefa(tarefa: any){
+    this.tarefas = this.tarefas.filter(arrayTarefa => tarefa != arrayTarefa);
 
+    this.salvaLocalStorage();
+ }
 }
