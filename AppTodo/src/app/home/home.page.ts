@@ -60,9 +60,26 @@ async  adicionandoTarefa(novatarefa: string) {
     return;
 
   }
-  const tarefa = { nome:novatarefa, realizada: false };
+  const tarefa = { nome:novatarefa, realizada: 0 };
   this.tarefas.push(tarefa);
-  this.salvaLocalStorage();
+ 
+  this.todoService.adicionandoTarefa(tarefa.nome, tarefa.realizada )
+  .then(async(resposta)=>{
+    const toast = await this.toastCtrl.create({
+      message: 'Operação Realizada com Sucesso!',
+      duration: 2000,
+      position: 'top'
+    })
+    toast.present();
+  })
+  .catch(async(erro)=>{
+  const toast = await this.toastCtrl.create({
+    message: 'Erro ao realizar operação!',
+    duration: 2000,
+    position: 'top'
+  });
+  toast.present()  })
+
 }
 
   salvaLocalStorage(){
