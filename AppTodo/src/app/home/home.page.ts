@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
+import { Action } from 'history';
+import { TodoService } from '../services/todo.service';
 
 @Component({
   selector: 'app-home',
@@ -8,15 +10,6 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
 })
 export class HomePage {
   tarefas: any[] = [];
-
-  constructor(private alertCrtl: AlertController,private toastCtrl: ToastController,private actionSheetCtrl: ActionSheetController) {
-    let tarefaSalva = localStorage.getItem('tarefaUsuario');
-
-    if (tarefaSalva !=null) {
-      this.tarefas = JSON.parse(tarefaSalva);
-    }
-  }
-  
 
   async showAdd() {
     const alert = await this. alertCrtl.create({
@@ -49,9 +42,48 @@ export class HomePage {
     });
   await alert.present();
 }
+  carregaTarefa(){
+  this.todoService.listaTarefa()
+  .then( async(resposta: any[])=>{
+    console.table(resposta);
+    this.tarefas = resposta;    
+  })
+  .catch(async(erro)=> {
+    const toast = await this.toastCrtl.create({
+      message: 'Erro ao realizar operação!',
+      duration: 2000,
+      position:'top'
+    });
+
+    toast.present(); });
+  }
+
+ constructor(private alertCrtl: AlertController,
+  private toastCrtl: ToastController,
+  private actionSheeCrtl: ActionSheetController,
+  private todoService: TodoService ) {
+
+  this.carregaTarefa();
+  }
+
+  caregaTarefa(){
+    this.todoService.listaTarefa()
+    .then( async(resposta: any[])=>{
+      console.table(resposta);
+      this.tarefas = resposta;
+    })
+    .catch(async(erro)=>{
+      const toast = await this.toastCrtl.create({
+        message: 'Erro ao realizar operação!',
+        duration: 2000,
+        position: 'top'
+      });
+      toast.present();  })
+  }
+
 async  adicionandoTarefa(novatarefa: string) {
   if (novatarefa.trim().length < 1) {
-    const toast = await this.toastCtrl.create({
+    const toast = await this.toastCrtl.create({
       message: 'Por favor, digite a tarefa 1',
       duration:2000,
       position: 'top',
@@ -63,21 +95,25 @@ async  adicionandoTarefa(novatarefa: string) {
   const tarefa = { nome:novatarefa, realizada: 0 };
   this.tarefas.push(tarefa);
  
-  this.todoService.adicionandoTarefa(tarefa.nome, tarefa.realizada )
-  .then(async(resposta)=>{
-    const toast = await this.toastCtrl.create({
+  this.todoService.adicionaTarefa(tarefa.nome, tarefa.realizada )
+  .then( async(resposta)=>{
+    const toast = await this.toastCrtl.create({
       message: 'Operação Realizada com Sucesso!',
       duration: 2000,
       position: 'top'
     })
     toast.present();
+    
+    this.carregaTarefa();
+
   })
   .catch(async(erro)=>{
-  const toast = await this.toastCtrl.create({
+  const toast = await this.toastCrtl.create({
     message: 'Erro ao realizar operação!',
     duration: 2000,
     position: 'top'
   });
+  
   toast.present()  })
 
 }
@@ -87,7 +123,7 @@ async  adicionandoTarefa(novatarefa: string) {
   }
 
   async realizaAcoes(tarefa: any) {
-    const actionSheet= await this.actionSheetCtrl.create({
+    const actionSheet= await this.actionSheeCrtl.create({
       header: 'Qual ação realizar?',
       buttons: [{
         text: tarefa.realizada ? 'Desmacar' : 'Marcar',
